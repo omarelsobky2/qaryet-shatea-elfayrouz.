@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Animated Background</title>
-  <style>
+  <title>qaryet shate2 elfayrouz</title>
+  <style>  
     /* Full viewport height and centered content */
     html, body {
       margin: 0;
@@ -21,6 +21,7 @@
       background: linear-gradient(180deg, #87CEEB, #FFFBF1); /* Gradients to add depth */
       overflow: hidden;
       position: relative;
+      flex-direction: column; /* Allow space for footer below content */
     }
 
     /* Animation Container */
@@ -46,12 +47,15 @@
       }
     }
 
-    /* Content Styling */
     .content {
       text-align: center;
       color: #333;
       z-index: 1;
       font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column; /* Align the content vertically */
+      align-items: center; /* Center items horizontally */
+      gap: 20px; /* Add space between the text and buttons */
     }
 
     .content h1 {
@@ -76,6 +80,35 @@
         transform: translateY(0);
       }
     }
+
+    /* Button Styling */
+    .sky-blue-button {
+      background-color: skyblue;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-size: 16px;
+      display: inline-block;
+    }
+
+    .sky-blue-button:hover {
+      background-color: deepskyblue;
+    }
+
+    /* Footer Styling */
+    footer {
+      position: absolute;
+      bottom: 10px; /* Position the footer near the bottom */
+      width: 100%; /* Ensure it stretches across the full width */
+      text-align: center;
+      font-size: 14px;
+      color: #333;
+    }
+
+    footer p {
+      margin: 0; /* Remove margin for better spacing */
+    }
   </style>
 </head>
 <body>
@@ -84,45 +117,19 @@
   
   <div class="content">
     <h1>اهلاً في قرية شاطئ الفيروز</h1>
-    <p>Welcom to karyet shatea ELFAYROUZ</p>
-  </div> <style>
-        .sky-blue-button {
-         
-   background-color: skyblue;
- 
-           color: white;
-            padding: 10px 20px;
+    <p>Welcome to Karyet Shatea ELFAYROUZ</p>
+    
+    <!-- Links styled as buttons -->
+    <a href="o3.html" class="sky-blue-button" target="_blank">مواعيد</a>
+    <a href="file:///C:/Users/nermin/Desktop/New%20folder/e2.html" class="sky-blue-button" target="_blank">اخبار</a>
+    <a href="o3.html" class="sky-blue-button" target="_blank">QR CODE</a>
+  </div>
 
-            text-align: center;
-            text-decoration: none;
- 
-           border-radius: 5px;
-           
- margin: 10px;
-            font-size: 16px;
-          
-  display: inline-block;
-        }
-    
-    .sky-blue-button:hover {
-           
- background-color: deepskyblue;
-        }
-    
-</style>
-</head>
-<body>
-
-    <a href=
-"o3.html" class="sky-blue-button" 
-target="_blank">مواعيد</a>
-    
-<a href="e2.html"
- class="sky-blue-button" target="_blank">اخبار</a>
-    
-<a href="o3.html" 
- class="sky-blue-button" target="_blank">INFO
-</a>
+  <!-- Footer Section -->
+  <footer>
+    <p>MADE BY: OMAR ELSOBKY</p>
+    <p>01226258465</p>
+  </footer>
 
 </body>
 </html>

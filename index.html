@@ -22,6 +22,7 @@
       overflow: hidden;
       position: relative;
       flex-direction: column; /* Allow space for footer below content */
+      font-family: 'Arial', sans-serif;
     }
 
     /* Animation Container */
@@ -51,21 +52,20 @@
       text-align: center;
       color: #333;
       z-index: 1;
-      font-family: 'Arial', sans-serif;
       display: flex;
       flex-direction: column; /* Align the content vertically */
       align-items: center; /* Center items horizontally */
-      gap: 20px; /* Add space between the text and buttons */
+      gap: 30px; /* Increase space between text and buttons */
     }
 
     .content h1 {
-      font-size: 3em;
+      font-size: 4em; /* Bigger text */
       color: #4a90e2;
       animation: fadeIn 2s ease-out;
     }
 
     .content p {
-      font-size: 1.6em;
+      font-size: 2em; /* Bigger text */
       animation: fadeIn 2s ease-out 0.5s;
     }
 
@@ -85,10 +85,10 @@
     .sky-blue-button {
       background-color: skyblue;
       color: white;
-      padding: 10px 20px;
+      padding: 15px 30px; /* Increase button size */
       text-decoration: none;
       border-radius: 50px;
-      font-size: 16px;
+      font-size: 1.5em; /* Bigger font size for buttons */
       display: inline-block;
     }
 
@@ -99,15 +99,54 @@
     /* Footer Styling */
     footer {
       position: absolute;
-      bottom: 10px; /* Position the footer near the bottom */
+      bottom: 20px; /* Position footer a little higher */
       width: 100%; /* Ensure it stretches across the full width */
       text-align: center;
-      font-size: 14px;
+      font-size: 1.2em; /* Larger font for footer */
       color: #333;
     }
 
     footer p {
       margin: 0; /* Remove margin for better spacing */
+    }
+
+    /* Media Queries for smaller screens */
+    @media (max-width: 768px) {
+      .content h1 {
+        font-size: 3em; /* Adjust header font size for smaller screens */
+      }
+
+      .content p {
+        font-size: 1.5em; /* Adjust paragraph font size for smaller screens */
+      }
+
+      .sky-blue-button {
+        font-size: 1.2em; /* Adjust button size for smaller screens */
+        padding: 12px 24px; /* Adjust button padding for smaller screens */
+      }
+
+      footer {
+        font-size: 1.1em; /* Adjust footer font size */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content h1 {
+        font-size: 2.5em; /* Adjust further for very small screens */
+      }
+
+      .content p {
+        font-size: 1.3em; /* Adjust further for very small screens */
+      }
+
+      .sky-blue-button {
+        font-size: 1.1em;
+        padding: 10px 20px;
+      }
+
+      footer {
+        font-size: 1em; /* Adjust footer size for very small screens */
+      }
     }
   </style>
 </head>
@@ -120,9 +159,9 @@
     <p>Welcome to Karyet Shatea ELFAYROUZ</p>
     
     <!-- Links styled as buttons -->
-    <a href="o3.html" class="sky-blue-button" target="_blank">مواعيد</a>
+    <a href="https://www.facebook.com" class="sky-blue-button" target="_blank">مواعيد</a>
     <a href="file:///C:/Users/nermin/Desktop/New%20folder/e2.html" class="sky-blue-button" target="_blank">اخبار</a>
-    <a href="o3.html" class="sky-blue-button" target="_blank">QR CODE</a>
+    <a href="https://www.facebook.com" class="sky-blue-button" target="_blank">QR CODE</a>
   </div>
 
   <!-- Footer Section -->
@@ -133,3 +172,5 @@
 
 </body>
 </html>
+
+

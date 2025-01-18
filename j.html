@@ -1,0 +1,41 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centered Image with Border and Text Below</title>
+    <style>
+        /* This style centers the image horizontally and vertically */
+        .container {
+            display: flex;
+            flex-direction: column;   /* Stack image and text vertically */
+            justify-content: center;  /* Centers items horizontally */
+            align-items: center;      /* Centers items vertically */
+            height: 100vh;            /* Makes container take full viewport height */
+            margin: 0;                /* Removes default margin of body */
+        }
+
+        .image {
+            border: 5px solid #000;  /* Adds a black border */
+            padding: 10px;            /* Adds padding around the image inside the border */
+            box-sizing: border-box;   /* Ensures border and padding are included in the total width and height */
+        }
+
+        .caption {
+            margin-top: 10px;         /* Adds space between the image and the caption */
+            font-size: 18px;          /* Sets the font size for the caption */
+            text-align: center;       /* Centers the caption text */
+            color: #963;              /* Sets text color */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="IMAGES/‪ei_1734776271533-removebg-preview.png" alt="Sample Image" class="image">
+        <p class="caption">بناء بوابة دخول جديدة </p>
+    </div>
+
+</body>
+</html>

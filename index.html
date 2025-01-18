@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Welcome to Karyet Shatea ELFAYROUZ, a peaceful beach village." />
+  <meta name="keywords" content="Karyet Shatea ELFAYROUZ, beach, village, tourism, Egypt" />
   <title>qaryet shate2 elfayrouz</title>
   <style>  
     /* Full viewport height and centered content */
@@ -25,7 +27,7 @@
       font-family: 'Arial', sans-serif;
     }
 
-    /* Animation Container */
+    /* Cloud Background */
     .clouds {
       position: absolute;
       top: 0;
@@ -48,6 +50,7 @@
       }
     }
 
+    /* Content Section */
     .content {
       text-align: center;
       color: #333;
@@ -114,6 +117,19 @@
       margin: 0; /* Remove margin for better spacing */
     }
 
+    /* Facebook Image Link at Top Left */
+    .facebook-link {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 1;
+    }
+
+    .facebook-link img {
+      width: 50px; /* Set the desired size for the Facebook image */
+      height: auto; /* Maintain the aspect ratio */
+    }
+
     /* Media Queries for smaller screens */
     @media (max-width: 768px) {
       .content h1 {
@@ -161,7 +177,10 @@
   </style>
 </head>
 <body>
-  <img src="IMAGES/ei_1734776271533-removebg-preview.png" height="200" >
+  <!-- Facebook Image Link at the top left -->
+  <a href="https://www.facebook.com/groups/1573679100213811/?ref=share&mibextid=CTbP7E" class="facebook-link" target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
+  </a>
 
   <div class="clouds"></div> <!-- Background Clouds -->
   

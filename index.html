@@ -55,18 +55,18 @@
       display: flex;
       flex-direction: column; /* Align the content vertically */
       align-items: center; /* Center items horizontally */
-      gap: 20px; /* Reduced space between text and buttons */
+      gap: 15px; /* Reduced space between text and buttons */
       padding: 0 10px; /* Padding to avoid content being too close to edges */
     }
 
     .content h1 {
-      font-size: 3.4em; /* Significantly larger text */
+      font-size: 2.8em; /* Slightly smaller text for phones */
       color: #4a90e2;
       animation: fadeIn 2s ease-out;
     }
 
     .content p {
-      font-size: 2em; /* Larger text for paragraph */
+      font-size: 1.8em; /* Slightly smaller text for paragraph */
       animation: fadeIn 2s ease-out 0.5s;
     }
 
@@ -86,10 +86,10 @@
     .sky-blue-button {
       background-color: skyblue;
       color: white;
-      padding: 15px 30px; /* Larger button padding */
+      padding: 12px 24px; /* Adjusted padding for smaller buttons */
       text-decoration: none;
       border-radius: 20px;
-      font-size: 2em; /* Large font size for buttons */
+      font-size: 1.6em; /* Adjusted font size for buttons */
       display: inline-block;
     }
 
@@ -103,7 +103,7 @@
       bottom: 10px; /* Position footer a little higher */
       width: 100%; /* Ensure it stretches across the full width */
       text-align: center;
-      font-size: 2em; /* Larger footer font size */
+      font-size: 1.5em; /* Adjusted footer size */
       color: #333;
     }
 
@@ -114,39 +114,39 @@
     /* Media Queries for smaller screens */
     @media (max-width: 768px) {
       .content h1 {
-        font-size: 2.8em; /* Smaller on medium screens */
+        font-size: 2.4em; /* Smaller on medium screens */
       }
 
       .content p {
-        font-size: 1.8em; /* Slightly smaller paragraph font */
+        font-size: 1.6em; /* Slightly smaller paragraph font */
       }
 
       .sky-blue-button {
-        font-size: 1.6em; /* Smaller buttons */
-        padding: 12px 24px; /* Adjust padding for medium screens */
+        font-size: 1.4em; /* Smaller buttons */
+        padding: 10px 20px; /* Adjust padding for medium screens */
       }
 
       footer {
-        font-size: 1.5em; /* Adjust footer size */
+        font-size: 1.4em; /* Adjust footer size */
       }
     }
 
     @media (max-width: 480px) {
       .content h1 {
-        font-size: 2.3em; /* Adjust for small screens */
+        font-size: 2.1em; /* Slightly smaller on smaller screens */
       }
 
       .content p {
-        font-size: 1.5em; /* Adjust for small screens */
+        font-size: 1.4em; /* Slightly smaller paragraph text */
       }
 
       .sky-blue-button {
-        font-size: 1.3em; /* Adjust button font size */
-        padding: 10px 20px; /* Adjust padding for small screens */
+        font-size: 1.2em; /* Even smaller buttons */
+        padding: 8px 16px; /* Reduced padding for small screens */
       }
 
       footer {
-        font-size: 1.2em; /* Footer size for very small screens */
+        font-size: 1.3em; /* Footer size for very small screens */
       }
     }
   </style>
@@ -174,4 +174,3 @@
 
 </body>
 </html>
-

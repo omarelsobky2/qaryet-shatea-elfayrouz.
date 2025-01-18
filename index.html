@@ -55,4 +55,123 @@
       display: flex;
       flex-direction: column; /* Align the content vertically */
       align-items: center; /* Center items horizontally */
-      gap: 20px; /* Reduced space be
+      gap: 20px; /* Reduced space between text and buttons */
+      padding: 0 10px; /* Padding to avoid content being too close to edges */
+    }
+
+    .content h1 {
+      font-size: 3.4em; /* Significantly larger text */
+      color: #4a90e2;
+      animation: fadeIn 2s ease-out;
+    }
+
+    .content p {
+      font-size: 2em; /* Larger text for paragraph */
+      animation: fadeIn 2s ease-out 0.5s;
+    }
+
+    /* Fade In Animation */
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Button Styling */
+    .sky-blue-button {
+      background-color: skyblue;
+      color: white;
+      padding: 15px 30px; /* Larger button padding */
+      text-decoration: none;
+      border-radius: 20px;
+      font-size: 2em; /* Large font size for buttons */
+      display: inline-block;
+    }
+
+    .sky-blue-button:hover {
+      background-color: deepskyblue;
+    }
+
+    /* Footer Styling */
+    footer {
+      position: absolute;
+      bottom: 10px; /* Position footer a little higher */
+      width: 100%; /* Ensure it stretches across the full width */
+      text-align: center;
+      font-size: 2em; /* Larger footer font size */
+      color: #333;
+    }
+
+    footer p {
+      margin: 0; /* Remove margin for better spacing */
+    }
+
+    /* Media Queries for smaller screens */
+    @media (max-width: 768px) {
+      .content h1 {
+        font-size: 2.8em; /* Smaller on medium screens */
+      }
+
+      .content p {
+        font-size: 1.8em; /* Slightly smaller paragraph font */
+      }
+
+      .sky-blue-button {
+        font-size: 1.6em; /* Smaller buttons */
+        padding: 12px 24px; /* Adjust padding for medium screens */
+      }
+
+      footer {
+        font-size: 1.5em; /* Adjust footer size */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content h1 {
+        font-size: 2.3em; /* Adjust for small screens */
+      }
+
+      .content p {
+        font-size: 1.5em; /* Adjust for small screens */
+      }
+
+      .sky-blue-button {
+        font-size: 1.3em; /* Adjust button font size */
+        padding: 10px 20px; /* Adjust padding for small screens */
+      }
+
+      footer {
+        font-size: 1.2em; /* Footer size for very small screens */
+      }
+    }
+  </style>
+</head>
+<body>
+  <img src="IMAGES/ei_1734776271533-removebg-preview.png" height="200" >
+
+  <div class="clouds"></div> <!-- Background Clouds -->
+  
+  <div class="content">
+    <h1>اهلاً في قرية شاطئ الفيروز</h1>
+    <p>Welcome to Karyet Shatea ELFAYROUZ</p>
+    
+    <!-- Links styled as buttons -->
+    <a href="https://www.facebook.com" class="sky-blue-button" target="_blank">مواعيد</a>
+    <a href="e2.html" class="sky-blue-button" target="_blank">اخبار</a>
+    <a href="https://www.facebook.com" class="sky-blue-button" target="_blank">QR CODE</a>
+  </div>
+
+  <!-- Footer Section -->
+  <footer>
+    <p style="font-size: 20px;">MADE BY: OMAR ELSOBKY</p>
+    <p style="font-size: 20px;">>01226258465</p>
+  </footer>
+
+</body>
+</html>
+

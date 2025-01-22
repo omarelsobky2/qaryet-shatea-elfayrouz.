@@ -72,7 +72,7 @@ header a {
 
 /* Image Styling in Header */
 header img {
-    width: 75px;
+    width: 50px;
     height: auto;
 }
 
@@ -86,7 +86,11 @@ header img {
     align-items: center;
     gap: 12px;
     padding: 0 10px;
-    margin-top: 90px; /* Added margin to avoid overlap with fixed header */
+    margin-top: 10px; /* Added margin to avoid overlap with fixed header */
+}
+.imgcenter{
+padding-bottom: 10px;
+
 }
 
 .content h1 {
@@ -124,7 +128,7 @@ header img {
     border-radius: 20px;
     font-size: 1.6em;
     display: inline-block;
-    transition: 1s ease;
+    transition: 2s ease;
 }
 
 .sky-blue-button:hover {

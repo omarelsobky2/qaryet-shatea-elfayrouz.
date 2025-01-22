@@ -1,0 +1,206 @@
+/* General Reset and Smooth Scroll */
+* {
+    font-family: "Poppins", sans-serif;
+    font-weight: 200;
+    font-style: normal;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+/* Allow Scrolling */
+html, body {
+    height: 100%; /* Ensure full height */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    overflow-y: auto; /* Allow vertical scroll */
+    position: relative;
+    background: #87CEEB; /* Sky blue */
+}
+
+/* Main Body styling */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: linear-gradient(180deg, #87CEEB, #FFFBF1); /* Gradient background */
+    min-height: 100vh; /* Ensures content can expand fully */
+}
+
+/* Cloud Background */
+.clouds {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://www.transparenttextures.com/patterns/clouds.png');
+    background-size: cover;
+    animation: moveClouds 30s linear infinite;
+    z-index: -1;
+}
+
+/* Cloud movement animation */
+@keyframes moveClouds {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Header Styling */
+header {
+    top: 0;
+    background-color: rgb(233, 233, 233);
+    width: 100%;
+    position: fixed;
+    z-index: 999;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+
+/* Link Styling */
+header a {
+    text-decoration: none;
+}
+
+/* Image Styling in Header */
+header img {
+    width: 75px;
+    height: auto;
+}
+
+/* Content Section */
+.content {
+    text-align: center;
+    color: #333;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 0 10px;
+    margin-top: 90px; /* Added margin to avoid overlap with fixed header */
+}
+
+.content h1 {
+    font-size: 2.8em;
+    color: #4a90e2;
+    animation: fadeIn 2s ease-out;
+    margin-bottom: 0;
+}
+
+.content p {
+    font-size: 1.8em;
+    animation: fadeIn 2s ease-out 0.5s;
+    margin-top: 0;
+    margin-bottom: 2px;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Button Styling */
+.sky-blue-button {
+    background-color: skyblue;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 1.6em;
+    display: inline-block;
+    transition: 1s ease;
+}
+
+.sky-blue-button:hover {
+    background-color: deepskyblue;
+    transform: scale(1.3);
+}
+
+/* Footer Styling */
+footer {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.5em;
+    color: #333;
+    z-index: 999;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* Facebook Image Link at Top Left */
+.facebook-link {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1;
+}
+
+.facebook-link img {
+    width: 50px;
+    height: auto;
+}
+
+/* Media Queries for Smaller Screens */
+@media (max-width: 768px) {
+    .content h1 {
+        font-size: 2.4em;
+    }
+
+    .content p {
+        font-size: 1.6em;
+    }
+
+    .sky-blue-button {
+        font-size: 1.4em;
+        padding: 10px 20px;
+    }
+
+    footer {
+        font-size: 1.4em;
+    }
+}
+
+@media (max-width: 480px) {
+    .content h1 {
+        font-size: 2.1em;
+    }
+
+    .content p {
+        font-size: 1.4em;
+    }
+
+    .sky-blue-button {
+        font-size: 1.2em;
+        padding: 8px 16px;
+    }
+
+    footer {
+        font-size: 1.3em;
+    }
+
+    img {
+        max-width: 60%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+}

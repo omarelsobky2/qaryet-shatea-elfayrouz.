@@ -118,6 +118,12 @@ padding-bottom: 10px;
         transform: translateY(0);
     }
 }
+.imgcenter{
+
+    display: flex;
+    justify-content: center;  /* Centers the image horizontally */
+    align-items: center;
+}
 
 /* Button Styling */
 .sky-blue-button {
@@ -202,9 +208,12 @@ footer p {
         font-size: 1.3em;
     }
 
-    img {
+    .imgcenter {
         max-width: 60%;
         height: auto;
         margin-bottom: 10px;
+        display: flex;
+    justify-content: center;  /* Centers the image horizontally */
+    align-items: center;
     }
 }

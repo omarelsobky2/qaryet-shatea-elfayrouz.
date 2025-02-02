@@ -1,5 +1,6 @@
 /* General Reset and Smooth Scroll */
 * {
+    font-family: 'Cairo', sans-serif;
     font-family: "Poppins", sans-serif;
     font-weight: 200;
     font-style: normal;
@@ -11,6 +12,7 @@
 
 /* Allow Scrolling */
 html, body {
+    font-family: 'Cairo', sans-serif;
     height: 100%; /* Ensure full height */
     overflow-x: hidden; /* Disable horizontal scroll */
     overflow-y: auto; /* Allow vertical scroll */
@@ -20,6 +22,7 @@ html, body {
 
 /* Main Body styling */
 body {
+    font-family: 'Cairo', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -40,6 +43,7 @@ body {
     animation: moveClouds 30s linear infinite;
     z-index: -1;
 }
+
 
 /* Cloud movement animation */
 @keyframes moveClouds {
@@ -62,6 +66,7 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 5px 10px;
+    padding-bottom: 1px;
     box-sizing: border-box;
 }
 .NAVIGATION{
@@ -77,10 +82,12 @@ header a {
 header img {
     width: 60px;
     height: auto;
+    padding-left: 1px;
 }
 
 /* Content Section */
 .content {
+    font-family: 'Cairo', sans-serif;
     text-align: center;
     color: #333;
     z-index: 1;
@@ -97,6 +104,7 @@ padding-bottom: px;
 }
 
 .content h1 {
+    font-family: 'Cairo', sans-serif;
     font-size: 2.8em;
     color: #4a90e2;
     animation: fadeIn 2s ease-out;
@@ -104,6 +112,7 @@ padding-bottom: px;
 }
 
 .content p {
+    font-family: 'Cairo', sans-serif;
     font-size: 1.8em;
     animation: fadeIn 2s ease-out 0.5s;
     margin-top: 0;
@@ -144,37 +153,44 @@ padding-bottom: px;
     background-color: deepskyblue;
     transform: scale(1.3);
 }
-.dropdown-content {
-color: #0019f8;
-text-decoration: solid;
-font-weight: bold;
-
-}
+/* Dropdown Menu */
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #f9f9f9;
+    background-color: #ff0000;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
+    border-radius: 5px;
   }
-
+  
+  /* Dropdown Menu Links */
   .dropdown-content a {
-    color: black;
+    color: rgb(255, 0, 0);
     padding: 12px 16px;
     text-decoration: none;
     display: block;
+    border-bottom: 1px solid #727272;  /* Adds separation between menu items */
   }
-
-  .dropdown-content a:hover {background-color: #f1f1f1}
-
+  
+  /* Highlight when hovering over menu items */
+  .dropdown-content a:hover {
+    background-color: #0004ff;
+    color: #0800ff;  /* Change text color when hovering */
+  }
+  
+  /* Display the dropdown content when hovering over the dropdown button */
   .dropdown:hover .dropdown-content {
     display: block;
   }
-
-  .dropdown {
-    position: relative;
-    display: inline-block;
+  
+  /* Optional: You can style the "اختار نوع الوحدة" text */
+  .dropdown-content p {
+    padding: 10px;
+    margin: 0;
+    font-weight: bold;
+    color: #00bbff;
+    background-color: #ff0000;
   }
 
   /* Floating Facebook link to the center-left */
@@ -198,12 +214,12 @@ font-weight: bold;
 
 /* Footer Styling */
 footer {
-    position: fixed;
+    position: absolute;
     bottom: 10px;
     width: 100%;
     text-align: center;
     font-size: 1.5em;
-    color: #333;
+    color: #656565;
     z-index: 999;
 }
 

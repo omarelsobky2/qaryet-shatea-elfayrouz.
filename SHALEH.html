@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختر الشرق أو الغرب</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        label {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        input[type="number"] {
+            padding: 8px;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+            color: #333;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQmC0xgsYe_FSyAntl2vskuntqudsm5bw",
+            authDomain: "backend-database-deaf3.firebaseapp.com",
+            projectId: "backend-database-deaf3",
+            storageBucket: "backend-database-deaf3.appspot.com",
+            messagingSenderId: "228457481653",
+            appId: "1:228457481653:web:ae034adc4d58dde85685fc",
+            measurementId: "G-MRV9B1K4J1"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app); // Initialize Firestore
+
+        // Function to save name to Firestore
+        function saveName(number, name) {
+            db.collection("numbers").doc(String(number)).set({
+                name: name
+            })
+            .then(() => {
+                console.log("Name saved successfully!");
+            })
+            .catch((error) => {
+                console.error("Error saving name: ", error);
+            });
+        }
+
+        // Function to get name by number
+        function getNameByNumber(number) {
+            const docRef = db.collection("numbers").doc(String(number));
+            docRef.get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const name = doc.data().name;
+                        displayMessage(number, name);
+                    } else {
+                        promptToAddNumber(number); // Prompt the user if number doesn't exist
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching document: ", error);
+                });
+        }
+
+        // Prompt user if the number does not exist and offer to add it
+        function promptToAddNumber(number) {
+            const userResponse = confirm("الرقم غير موجود. هل ترغب في إضافة رقم جديد؟");
+            if (userResponse) {
+                const newName = prompt("الرجاء إدخال اسمك:");
+                if (newName) {
+                    saveName(number, newName);
+                    displayMessage(number, newName);
+                }
+            } else {
+                alert("لم يتم إضافة الرقم.");
+            }
+        }
+
+        // Display the result message
+        function displayMessage(number, name) {
+            const resultElement = document.getElementById("result");
+            resultElement.innerHTML = `الرقم: ${number} <br> الاسم: ${name}`;
+        }
+
+        // Show message when the "OK" button is clicked
+        function showMessage() {
+            const direction = document.querySelector('input[name="direction"]:checked').value;
+            const number = document.getElementById("number").value;
+            getNameByNumber(number);
+        }
+    </script>
+</head>
+<body>
+
+    <h2>اختر الشرق أو الغرب وأدخل رقمًا</h2>
+
+    <div class="form-container">
+        <form>
+            <div>
+                <label>
+                    <input type="radio" name="direction" value="East" required> شرق
+                </label>
+                <label>
+                    <input type="radio" name="direction" value="West"> غرب
+                </label>
+            </div>
+            <br><br>
+
+            <div>
+                <label for="number">أدخل رقمًا:</label>
+                <input type="number" id="number" required>
+            </div>
+            <br><br>
+
+            <button type="button" onclick="showMessage()">موافق</button>
+        </form>
+    </div>
+
+    <div id="result" class="result"></div>
+
+</body>
+</html>

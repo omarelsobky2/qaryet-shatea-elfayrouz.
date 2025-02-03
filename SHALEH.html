@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اختر الرقم وأدخل اسمك</title>
+    <title>إدارة البيانات</title>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
@@ -37,13 +37,6 @@
             margin-right: 10px;
         }
 
-        input[type="number"] {
-            padding: 8px;
-            font-size: 16px;
-            width: 100%;
-            margin-top: 5px;
-        }
-
         button {
             padding: 10px 20px;
             font-size: 16px;
@@ -71,25 +64,39 @@
             text-align: center;
         }
 
-        .admin-actions {
-            position: absolute;
-            top: 10px;
-            left: 10px;
+        .admin-panel {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #eef;
+            border-radius: 8px;
         }
 
-        .admin-actions button {
-            padding: 5px 10px;
-            font-size: 12px;
-            background-color: #007bff;
+        .admin-panel input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+        }
+
+        /* Positioning the Admin Login Button */
+        #adminLoginButton {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 30px; /* Small square width */
+            height: 30px; /* Small square height */
+            padding: 0; /* No padding */
+            font-size: 12px; /* Smaller font size */
+            background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 50%; /* Fully circular */
             cursor: pointer;
-            margin: 5px;
+            text-align: center;
         }
 
-        .admin-actions button:hover {
-            background-color: #0056b3;
+        #adminLoginButton:hover {
+            background-color: #45a049;
         }
 
     </style>
@@ -111,49 +118,55 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // Your admin UID
         const adminUID = 'NvXoBWMruNOnhCjDBrSmgj4oMmi2';
 
-        // Function to check if the user is the admin
-        function checkAdminStatus(user) {
-            const adminMessageElement = document.getElementById("adminMessage");
-
+        // Function to check admin status
+        function checkAdmin(user) {
             if (user && user.uid === adminUID) {
-                adminMessageElement.innerHTML = "أنت المسؤول (Admin)";
-                enableAdminFeatures(); // Allow admin to edit الصيانه
+                document.getElementById("adminPanel").style.display = "block";
+                alert("مرحبًا، أنت مسموح لك بإدارة البيانات كأدمن");
             } else {
-                adminMessageElement.innerHTML = "أنت مستخدم عادي (Not Admin)";
-                disableAdminFeatures(); // Hide admin features from regular users
+                document.getElementById("adminPanel").style.display = "none";
             }
         }
 
-        // Enable the admin features
-        function enableAdminFeatures() {
-            const maintenanceInputElement = document.getElementById("maintenanceInput");
-            maintenanceInputElement.style.display = "block"; // Show admin features
+        // Authentication listener
+        auth.onAuthStateChanged((user) => {
+            checkAdmin(user);
+        });
+
+        // Admin login function
+        function adminLogin() {
+            const email = prompt("أدخل بريدك الإلكتروني:");
+            const password = prompt("أدخل كلمة المرور:");
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => alert("تم تسجيل الدخول بنجاح"))
+                .catch((error) => alert("خطأ في تسجيل الدخول: " + error.message));
         }
 
-        // Disable the admin features
-        function disableAdminFeatures() {
-            const maintenanceInputElement = document.getElementById("maintenanceInput");
-            maintenanceInputElement.style.display = "none"; // Hide admin features
+        // Admin logout function
+        function adminLogout() {
+            auth.signOut().then(() => alert("تم تسجيل الخروج بنجاح"));
         }
 
-        // Function to fetch name and maintenance status from Firestore
+        // Fetch data for users
         function getNameAndMaintenance(number) {
             const docRef = db.collection("numbers").doc(String(number));
+
             docRef.get()
                 .then((doc) => {
                     if (doc.exists) {
                         const name = doc.data().name;
-                        const maintenanceStatus = doc.data().الصيانه || "لم تحدد بعد"; // Default "لم تحدد بعد" for non-admin users
+                        const maintenanceStatus = doc.data().الصيانه || "لم تحدد بعد"; // Display "لم تحدد بعد" if not set
                         displayMessage(number, name, maintenanceStatus);
                     } else {
-                        promptToAddData(number); // Prompt non-admin to add name
+                        alert("الرقم غير موجود. من فضلك تأكد من إدخاله بشكل صحيح.");
+                        document.getElementById("result").innerHTML = "الرقم غير موجود.";
                     }
                 })
                 .catch((error) => {
                     console.error("Error fetching document: ", error);
+                    alert("حدث خطأ أثناء استرجاع البيانات.");
                 });
         }
 
@@ -163,87 +176,41 @@
             resultElement.innerHTML = `الرقم: ${number} <br> الاسم: ${name} <br> الصيانه: ${maintenanceStatus}`;
         }
 
-        // Prompt user to add name if number does not exist in Firestore
-        function promptToAddData(number) {
-            const newName = prompt("الرقم غير موجود. من فضلك أدخل اسمك:");
-
-            // Check if name is entered
-            if (newName) {
-                saveName(number, newName);
-                displayMessage(number, newName, "لم تحدد بعد"); // Show "لم تحدد بعد" for non-admins
-            }
-        }
-
-        // Save name and maintenance status to Firestore
-        function saveName(number, name) {
-            db.collection("numbers").doc(String(number)).set({
-                name: name,
-                الصيانه: "لم تحدد بعد" // Set initial الصيانه value
-            })
-            .then(() => {
-                console.log("Name and الصيانه saved successfully!");
-            })
-            .catch((error) => {
-                console.error("Error saving name and الصيانه: ", error);
-            });
-        }
-
         // Show message when the "OK" button is clicked
         function showMessage() {
             const number = document.getElementById("number").value;
+
             if (!number) {
                 alert("من فضلك أدخل رقم.");
                 return;
             }
-            getNameAndMaintenance(number);
+
+            // Convert the number to a string just to be safe
+            getNameAndMaintenance(String(number));
         }
 
-        // Login Function for Admin
-        function loginAdmin() {
-            const email = prompt("أدخل بريدك الإلكتروني:");
-            const password = prompt("أدخل كلمة المرور:");
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    alert("تم تسجيل الدخول بنجاح");
-                    checkAdminStatus(user);
-                })
-                .catch((error) => {
-                    alert("فشل تسجيل الدخول: " + error.message);
-                });
-        }
+        // Admin functions
+        function saveData() {
+            const number = document.getElementById("newNumber").value;
+            const name = document.getElementById("newName").value;
+            const maintenanceStatus = parseFloat(document.getElementById("newMaintenance").value); // Now it's a number
 
-        // Logout Function for Admin
-        function logoutAdmin() {
-            auth.signOut()
-                .then(() => {
-                    alert("تم تسجيل الخروج");
-                    checkAdminStatus(null);
-                })
-                .catch((error) => {
-                    alert("فشل الخروج: " + error.message);
-                });
-        }
-
-        // Listen for Firebase authentication state change
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                checkAdminStatus(user); // Check if the logged-in user is the admin
-            } else {
-                checkAdminStatus(null);
+            if (isNaN(maintenanceStatus)) {
+                alert("من فضلك أدخل قيمة صحيحة للصيانة.");
+                return;
             }
-        });
+
+            db.collection("numbers").doc(number).set({
+                name: name,
+                الصيانه: maintenanceStatus
+            }).then(() => alert("تم حفظ البيانات بنجاح"))
+              .catch((error) => alert("خطأ في الحفظ: " + error.message));
+        }
     </script>
 </head>
 <body>
 
-    <h2>أدخل رقمك واسمك</h2>
-
-    <!-- Admin Login / Logout -->
-    <div class="admin-actions">
-        <button onclick="loginAdmin()">تسجيل الدخول كإدمن</button>
-        <button onclick="logoutAdmin()">تسجيل الخروج</button>
-    </div>
+    <h2>عرض الأرقام والأسماء والصيانة</h2>
 
     <div class="form-container">
         <form>
@@ -252,23 +219,30 @@
                 <input type="number" id="number" required>
             </div>
             <br><br>
-
             <button type="button" onclick="showMessage()">موافق</button>
         </form>
     </div>
 
     <div id="result" class="result"></div>
 
-    <!-- For Admin to Edit الصيانه -->
-    <div id="maintenanceInput" class="maintenance-input" style="display:none;">
-        <h3>تعديل الصيانه:</h3>
-        <textarea id="newMaintenanceText"></textarea>
-        <button type="button" onclick="updateMaintenance()">تحديث الصيانه</button>
+    <div class="admin-panel" id="adminPanel">
+        <h3>لوحة تحكم الأدمن</h3>
+        <label>رقم جديد:</label>
+        <input type="number" id="newNumber">
+        <label>اسم جديد:</label>
+        <input type="text" id="newName">
+        <label>الصيانه:</label>
+        <input type="number" id="newMaintenance" placeholder="مثال: 6000">
+        <button type="button" onclick="saveData()">حفظ البيانات</button>
+        <br><br>
+        <button onclick="adminLogout()">تسجيل الخروج</button>
     </div>
 
-    <div id="adminMessage"></div>
+    <!-- Admin Login Button -->
+    <button id="adminLoginButton" onclick="adminLogin()">+</button>
 
 </body>
 </html>
+
 
 

@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اختر الشرق أو الغرب</title>
+    <title>اختر الرقم وأدخل اسمك</title>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
 
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
             padding: 20px;
+            position: relative;
         }
 
         h2 {
@@ -68,15 +70,37 @@
             margin-top: 20px;
             text-align: center;
         }
+
+        .admin-actions {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        .admin-actions button {
+            padding: 5px 10px;
+            font-size: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .admin-actions button:hover {
+            background-color: #0056b3;
+        }
+
     </style>
 
     <script>
         // Firebase configuration
-        var firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyCQmC0xgsYe_FSyAntl2vskuntqudsm5bw",
             authDomain: "backend-database-deaf3.firebaseapp.com",
             projectId: "backend-database-deaf3",
-            storageBucket: "backend-database-deaf3.appspot.com",
+            storageBucket: "backend-database-deaf3.firebasestorage.app",
             messagingSenderId: "228457481653",
             appId: "1:228457481653:web:ae034adc4d58dde85685fc",
             measurementId: "G-MRV9B1K4J1"
@@ -85,30 +109,47 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
 
-        // Function to save name to Firestore
-        function saveName(number, name) {
-            db.collection("numbers").doc(String(number)).set({
-                name: name
-            })
-            .then(() => {
-                console.log("Name saved successfully!");
-            })
-            .catch((error) => {
-                console.error("Error saving name: ", error);
-            });
+        // Your admin UID
+        const adminUID = 'NvXoBWMruNOnhCjDBrSmgj4oMmi2';
+
+        // Function to check if the user is the admin
+        function checkAdminStatus(user) {
+            const adminMessageElement = document.getElementById("adminMessage");
+
+            if (user && user.uid === adminUID) {
+                adminMessageElement.innerHTML = "أنت المسؤول (Admin)";
+                enableAdminFeatures(); // Allow admin to edit الصيانه
+            } else {
+                adminMessageElement.innerHTML = "أنت مستخدم عادي (Not Admin)";
+                disableAdminFeatures(); // Hide admin features from regular users
+            }
         }
 
-        // Function to get name by number
-        function getNameByNumber(number) {
+        // Enable the admin features
+        function enableAdminFeatures() {
+            const maintenanceInputElement = document.getElementById("maintenanceInput");
+            maintenanceInputElement.style.display = "block"; // Show admin features
+        }
+
+        // Disable the admin features
+        function disableAdminFeatures() {
+            const maintenanceInputElement = document.getElementById("maintenanceInput");
+            maintenanceInputElement.style.display = "none"; // Hide admin features
+        }
+
+        // Function to fetch name and maintenance status from Firestore
+        function getNameAndMaintenance(number) {
             const docRef = db.collection("numbers").doc(String(number));
             docRef.get()
                 .then((doc) => {
                     if (doc.exists) {
                         const name = doc.data().name;
-                        displayMessage(number, name);
+                        const maintenanceStatus = doc.data().الصيانه || "لم تحدد بعد"; // Default "لم تحدد بعد" for non-admin users
+                        displayMessage(number, name, maintenanceStatus);
                     } else {
-                        promptToAddNumber(number); // Prompt the user if number doesn't exist
+                        promptToAddData(number); // Prompt non-admin to add name
                     }
                 })
                 .catch((error) => {
@@ -116,54 +157,96 @@
                 });
         }
 
-        // Prompt user if the number does not exist and offer to add it
-        function promptToAddNumber(number) {
-            const userResponse = confirm("الرقم غير موجود. هل ترغب في إضافة رقم جديد؟");
-            if (userResponse) {
-                const newName = prompt("الرجاء إدخال اسمك:");
-                if (newName) {
-                    saveName(number, newName);
-                    displayMessage(number, newName);
-                }
-            } else {
-                alert("لم يتم إضافة الرقم.");
+        // Display the result message including name and maintenance status
+        function displayMessage(number, name, maintenanceStatus) {
+            const resultElement = document.getElementById("result");
+            resultElement.innerHTML = `الرقم: ${number} <br> الاسم: ${name} <br> الصيانه: ${maintenanceStatus}`;
+        }
+
+        // Prompt user to add name if number does not exist in Firestore
+        function promptToAddData(number) {
+            const newName = prompt("الرقم غير موجود. من فضلك أدخل اسمك:");
+
+            // Check if name is entered
+            if (newName) {
+                saveName(number, newName);
+                displayMessage(number, newName, "لم تحدد بعد"); // Show "لم تحدد بعد" for non-admins
             }
         }
 
-        // Display the result message
-        function displayMessage(number, name) {
-            const resultElement = document.getElementById("result");
-            resultElement.innerHTML = `الرقم: ${number} <br> الاسم: ${name}`;
+        // Save name and maintenance status to Firestore
+        function saveName(number, name) {
+            db.collection("numbers").doc(String(number)).set({
+                name: name,
+                الصيانه: "لم تحدد بعد" // Set initial الصيانه value
+            })
+            .then(() => {
+                console.log("Name and الصيانه saved successfully!");
+            })
+            .catch((error) => {
+                console.error("Error saving name and الصيانه: ", error);
+            });
         }
 
         // Show message when the "OK" button is clicked
         function showMessage() {
-            const direction = document.querySelector('input[name="direction"]:checked').value;
             const number = document.getElementById("number").value;
             if (!number) {
                 alert("من فضلك أدخل رقم.");
                 return;
             }
-            getNameByNumber(number);
+            getNameAndMaintenance(number);
         }
+
+        // Login Function for Admin
+        function loginAdmin() {
+            const email = prompt("أدخل بريدك الإلكتروني:");
+            const password = prompt("أدخل كلمة المرور:");
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    alert("تم تسجيل الدخول بنجاح");
+                    checkAdminStatus(user);
+                })
+                .catch((error) => {
+                    alert("فشل تسجيل الدخول: " + error.message);
+                });
+        }
+
+        // Logout Function for Admin
+        function logoutAdmin() {
+            auth.signOut()
+                .then(() => {
+                    alert("تم تسجيل الخروج");
+                    checkAdminStatus(null);
+                })
+                .catch((error) => {
+                    alert("فشل الخروج: " + error.message);
+                });
+        }
+
+        // Listen for Firebase authentication state change
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                checkAdminStatus(user); // Check if the logged-in user is the admin
+            } else {
+                checkAdminStatus(null);
+            }
+        });
     </script>
 </head>
 <body>
 
-    <h2>اختر الشرق أو الغرب وأدخل رقمًا</h2>
+    <h2>أدخل رقمك واسمك</h2>
+
+    <!-- Admin Login / Logout -->
+    <div class="admin-actions">
+        <button onclick="loginAdmin()">تسجيل الدخول كإدمن</button>
+        <button onclick="logoutAdmin()">تسجيل الخروج</button>
+    </div>
 
     <div class="form-container">
         <form>
-            <div>
-                <label>
-                    <input type="radio" name="direction" value="East" required> شرق
-                </label>
-                <label>
-                    <input type="radio" name="direction" value="West"> غرب
-                </label>
-            </div>
-            <br><br>
-
             <div>
                 <label for="number">أدخل رقمًا:</label>
                 <input type="number" id="number" required>
@@ -176,6 +259,16 @@
 
     <div id="result" class="result"></div>
 
+    <!-- For Admin to Edit الصيانه -->
+    <div id="maintenanceInput" class="maintenance-input" style="display:none;">
+        <h3>تعديل الصيانه:</h3>
+        <textarea id="newMaintenanceText"></textarea>
+        <button type="button" onclick="updateMaintenance()">تحديث الصيانه</button>
+    </div>
+
+    <div id="adminMessage"></div>
+
 </body>
 </html>
+
 

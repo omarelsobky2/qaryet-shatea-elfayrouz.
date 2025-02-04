@@ -40,7 +40,7 @@
         button {
             padding: 10px 20px;
             font-size: 16px;
-            background-color: #4CAF50;
+            background-color: #4a4a4a;
             color: white;
             border: none;
             border-radius: 5px;
@@ -50,7 +50,7 @@
         }
 
         button:hover {
-            background-color: #45a049;
+            background-color: #4a4a4a;
         }
 
         .result {
@@ -72,10 +72,32 @@
             border-radius: 8px;
         }
 
-        .admin-panel input {
+        .admin-panel input,
+        .admin-panel select {
             width: 100%;
             padding: 8px;
             margin: 5px 0;
+        }
+
+        /* Admin Login Modal */
+        #adminLoginModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #adminLoginModal form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
         }
 
         /* Positioning the Admin Login Button */
@@ -83,26 +105,25 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            width: 30px; /* Small square width */
-            height: 30px; /* Small square height */
-            padding: 0; /* No padding */
-            font-size: 12px; /* Smaller font size */
-            background-color: #4CAF50;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            font-size: 12px;
+            background-color: #4a4a4a;
             color: white;
             border: none;
-            border-radius: 50%; /* Fully circular */
+            border-radius: 20%;
             cursor: pointer;
             text-align: center;
         }
 
         #adminLoginButton:hover {
-            background-color: #45a049;
+            background-color: #4a4a4a;
         }
 
     </style>
 
     <script>
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCQmC0xgsYe_FSyAntl2vskuntqudsm5bw",
             authDomain: "backend-database-deaf3.firebaseapp.com",
@@ -118,11 +139,15 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        const adminUID = 'NvXoBWMruNOnhCjDBrSmgj4oMmi2';
+        // List of admin UIDs
+        const adminUIDs = [
+            'NvXoBWMruNOnhCjDBrSmgj4oMmi2',  // Replace with actual admin UID
+            'Wh1XYLnOG6dm5RvqB0sYZawkMEz2'   // Replace with another admin UID
+        ];
 
         // Function to check admin status
         function checkAdmin(user) {
-            if (user && user.uid === adminUID) {
+            if (user && adminUIDs.includes(user.uid)) {
                 document.getElementById("adminPanel").style.display = "block";
                 alert("مرحبًا، أنت مسموح لك بإدارة البيانات كأدمن");
             } else {
@@ -137,10 +162,18 @@
 
         // Admin login function
         function adminLogin() {
-            const email = prompt("أدخل بريدك الإلكتروني:");
-            const password = prompt("أدخل كلمة المرور:");
+            document.getElementById("adminLoginModal").style.display = "flex";
+        }
+
+        function handleAdminLogin() {
+            const email = document.getElementById("adminEmail").value;
+            const password = document.getElementById("adminPassword").value;
+
             auth.signInWithEmailAndPassword(email, password)
-                .then(() => alert("تم تسجيل الدخول بنجاح"))
+                .then(() => {
+                    alert("تم تسجيل الدخول بنجاح");
+                    document.getElementById("adminLoginModal").style.display = "none";
+                })
                 .catch((error) => alert("خطأ في تسجيل الدخول: " + error.message));
         }
 
@@ -157,10 +190,14 @@
                 .then((doc) => {
                     if (doc.exists) {
                         const name = doc.data().name;
-                        const maintenanceStatus = doc.data().الصيانه || "لم تحدد بعد"; // Display "لم تحدد بعد" if not set
-                        displayMessage(number, name, maintenanceStatus);
+                        const maintenanceStatus = doc.data().الصيانه || "لم تحدد بعد";
+                        const unpaidMaintenance = doc.data().الصيانه_الغير_مدفوعه || "لم تحدد بعد";
+                        const total = doc.data().الاجمالي || "لم تحدد بعد";
+                        const unitType = doc.data().نوع_الوحده || "لم تحدد بعد";
+                        const unitStatus = doc.data().حالة_الوحده || "لم تحدد بعد";
+                        displayMessage(number, name, maintenanceStatus, unpaidMaintenance, total, unitType, unitStatus);
                     } else {
-                        alert("الرقم غير موجود. من فضلك تأكد من إدخاله بشكل صحيح.");
+                        alert("الرقم غير موجود. من الممكن انه لن يودع بعد.");
                         document.getElementById("result").innerHTML = "الرقم غير موجود.";
                     }
                 })
@@ -171,15 +208,16 @@
         }
 
         // Display the result message including name and maintenance status
-        function displayMessage(number, name, maintenanceStatus) {
+        function displayMessage(number, name, maintenanceStatus, unpaidMaintenance, total, unitType, unitStatus) {
             const resultElement = document.getElementById("result");
-            resultElement.innerHTML = `الرقم: ${number} <br> الاسم: ${name} <br> الصيانه: ${maintenanceStatus}`;
+            resultElement.innerHTML = `الرقم: ${number} <br> الاسم: ${name} <br> الصيانه: ${maintenanceStatus} <br> الصيانه الغير مدفوعه: ${unpaidMaintenance} <br> الاجمالي: ${total} <br> نوع الوحده: ${unitType} <br> حالة الوحده: ${unitStatus}`;
         }
 
         // Show message when the "OK" button is clicked
         function showMessage() {
             const number = document.getElementById("number").value;
 
+            // Make sure the input is not empty
             if (!number) {
                 alert("من فضلك أدخل رقم.");
                 return;
@@ -193,56 +231,95 @@
         function saveData() {
             const number = document.getElementById("newNumber").value;
             const name = document.getElementById("newName").value;
-            const maintenanceStatus = parseFloat(document.getElementById("newMaintenance").value); // Now it's a number
+            const maintenanceStatus = parseFloat(document.getElementById("newMaintenance").value); // Paid maintenance
+            const unpaidMaintenance = parseFloat(document.getElementById("newUnpaidMaintenance").value); // Unpaid maintenance
+            const unitType = document.getElementById("newUnitType").value; // Selected unit type
+            const unitStatus = document.getElementById("newUnitStatus").value; // Selected unit status
 
-            if (isNaN(maintenanceStatus)) {
-                alert("من فضلك أدخل قيمة صحيحة للصيانة.");
+            if (isNaN(maintenanceStatus) || isNaN(unpaidMaintenance)) {
+                alert("من فضلك أدخل قيم صحيحة للصيانة.");
                 return;
             }
+            const total = maintenanceStatus + unpaidMaintenance;
 
+            // Save the new data to Firestore
             db.collection("numbers").doc(number).set({
                 name: name,
-                الصيانه: maintenanceStatus
-            }).then(() => alert("تم حفظ البيانات بنجاح"))
-              .catch((error) => alert("خطأ في الحفظ: " + error.message));
+                الصيانه: maintenanceStatus,
+                الصيانه_الغير_مدفوعه: unpaidMaintenance,
+                الاجمالي: total,
+                نوع_الوحده: unitType,
+                حالة_الوحده: unitStatus
+            }).then(() => {
+                alert("تم حفظ البيانات بنجاح");
+                // Clear the inputs after saving
+                document.getElementById("newNumber").value = '';
+                document.getElementById("newName").value = '';
+                document.getElementById("newMaintenance").value = '';
+                document.getElementById("newUnpaidMaintenance").value = '';
+            }).catch((error) => alert("خطأ أثناء حفظ البيانات: " + error.message));
         }
     </script>
 </head>
+
 <body>
 
-    <h2>عرض الأرقام والأسماء والصيانة</h2>
-
-    <div class="form-container">
-        <form>
-            <div>
-                <label for="number">أدخل رقمًا:</label>
-                <input type="number" id="number" required>
-            </div>
-            <br><br>
-            <button type="button" onclick="showMessage()">موافق</button>
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal">
+        <form onsubmit="event.preventDefault(); handleAdminLogin();">
+            <h3>تسجيل الدخول كأدمن</h3>
+            <input type="email" id="adminEmail" placeholder="البريد الإلكتروني" required>
+            <input type="password" id="adminPassword" placeholder="كلمة المرور" required>
+            <button type="submit">دخول</button>
         </form>
     </div>
 
-    <div id="result" class="result"></div>
+    <!-- Admin Login Button -->
+    <button id="adminLoginButton" onclick="adminLogin()">🔑</button>
 
-    <div class="admin-panel" id="adminPanel">
-        <h3>لوحة تحكم الأدمن</h3>
-        <label>رقم جديد:</label>
-        <input type="number" id="newNumber">
-        <label>اسم جديد:</label>
-        <input type="text" id="newName">
-        <label>الصيانه:</label>
-        <input type="number" id="newMaintenance" placeholder="مثال: 6000">
-        <button type="button" onclick="saveData()">حفظ البيانات</button>
-        <br><br>
-        <button onclick="adminLogout()">تسجيل الخروج</button>
+    <h2>إدارة البيانات</h2>
+
+    <div class="form-container">
+        <!-- Form for user search -->
+        <label for="number">أدخل الرقم:</label>
+        <input type="text" id="number" placeholder="مثال: 65" />
+
+        <button onclick="showMessage()">بحث</button>
+
+        <div id="result" class="result"></div>
     </div>
 
-    <!-- Admin Login Button -->
-    <button id="adminLoginButton" onclick="adminLogin()">+</button>
+    <div id="adminPanel" class="admin-panel">
+        <h3>إضافة بيانات جديدة</h3>
+
+        <label for="newNumber">الوحدة:</label>
+        <input type="text" id="newNumber" placeholder="أدخل رقم الوحدة" />
+
+        <label for="newName">اسم الوحدة:</label>
+        <input type="text" id="newName" placeholder="أدخل اسم الوحدة" />
+
+        <label for="newMaintenance">الصيانة:</label>
+        <input type="number" id="newMaintenance" placeholder="الصيانة المدفوعة" />
+
+        <label for="newUnpaidMaintenance">الصيانة المتأخره:</label>
+        <input type="number" id="newUnpaidMaintenance" placeholder="الصيانة الغير مدفوعة" />
+
+        <label for="newUnitType">نوع الوحدة:</label>
+        <select id="newUnitType">
+            <option value="فيلا">فيلا</option>
+            <option value="شاليه">شاليه</option>
+            <option value="ستوديو">ستوديو</option>
+        </select>
+
+        <label for="newUnitStatus">حالة الوحدة:</label>
+        <select id="newUnitStatus">
+            <option value="ايجار">ايجار</option>
+            <option value="ملك">ملك</option>
+            <option value="تستأجر في الصيف">تستأجر في الصيف</option>
+        </select>
+
+        <button onclick="saveData()">حفظ البيانات</button>
+    </div>
 
 </body>
 </html>
-
-
-

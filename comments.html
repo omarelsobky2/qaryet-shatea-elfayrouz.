@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comment Section</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+/* Global Styling */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  font-family: 'Cairo', sans-serif; 
+  background-color: #f4f7fb;
+  color: #333;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  flex-direction: column; /* Stack elements vertically */
+  height: 100vh;
+  margin: 0;
+  padding: 20px;
+  transition: background-color 0.3s ease;
+}
+
+h1 {
+  text-align: center;
+  font-size: 34px;
+  color: #333;
+  margin-bottom: 20px; /* Adjusted spacing */
+}
+
+/* Comment Form Styling */
+#comment-form {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px; /* Added margin for spacing between form and comments */
+  transition: background-color 0.3s ease;
+}
+
+label {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 8px;
+  display: block;
+}
+
+input[type="text"], textarea {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus, textarea:focus {
+  border-color: #0078d4;
+  box-shadow: 0 0 8px rgba(0, 120, 212, 0.3);
+  outline: none;
+}
+
+textarea {
+  height: 150px;
+  resize: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #4a4a4a;
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #333;
+}
+
+/* Comments Section */
+#comments-section {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 40px; /* Ensures space between the form and comments section */
+}
+
+.comment {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.comment-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0078d4;
+  margin-bottom: 8px;
+}
+
+.comment-text {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.comment-date {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 12px;
+}
+
+/* Status message styling */
+#status-message {
+  margin-top: 20px;
+  padding: 10px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+  </style>
+</head>
+<body>
+
+  <h1>Welcome to the Comment Section</h1>
+
+  <!-- Comment Form -->
+  <div id="comment-form">
+    <label for="name">Your Name:</label>
+    <input type="text" id="name" placeholder="Enter your name">
+
+    <label for="comment">Your Comment:</label>
+    <textarea id="comment" placeholder="Write your comment"></textarea>
+
+    <button id="submit-btn">Submit Comment</button>
+  </div>
+
+  <div id="comments-section">
+    <h2>Comments:</h2>
+    <!-- Comments will be dynamically displayed here -->
+  </div>
+
+  <!-- Firebase SDK (v9+ modular) -->
+  <script type="module">
+    // Import necessary Firebase functions from SDK v9+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+    import { getDatabase, ref, push, get, child } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCaEnruCV8pdwXf70MyJXuc1tPLfKOt-G8",
+      authDomain: "comments-b40be.firebaseapp.com",
+      databaseURL: "https://comments-b40be-default-rtdb.firebaseio.com",
+      projectId: "comments-b40be",
+      storageBucket: "comments-b40be.firebasestorage.app",
+      messagingSenderId: "462309318308",
+      appId: "1:462309318308:web:8b5719c4a96e4c79f25031",
+      measurementId: "G-XRRDMTB3Y2"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app); // Get the Firebase Realtime Database
+
+    // Function to submit a comment to Firebase
+    function submitComment() {
+      const name = document.getElementById("name").value;
+      const comment = document.getElementById("comment").value;
+
+      console.log("Name:", name);
+      console.log("Comment:", comment);
+
+      if (name && comment) {
+        const timestamp = new Date().toLocaleString(); // Get current date and time
+        const newComment = {
+          name: name,
+          comment: comment,
+          date: timestamp
+        };
+
+        // Save the comment to Firebase
+        const commentsRef = ref(db, 'comments');  // Reference to the comments node in the DB
+        push(commentsRef, newComment)
+          .then(() => {
+            console.log("Comment submitted successfully!");
+            alert("Comment submitted successfully!");
+
+            // Clear the form after submission
+            document.getElementById("name").value = '';
+            document.getElementById("comment").value = '';
+
+            // Refresh the comments section
+            displayComments();
+          })
+          .catch((error) => {
+            console.error("Error submitting comment:", error);
+            alert("Error submitting comment: " + error.message);
+          });
+      } else {
+        alert("Please fill in both your name and comment.");
+      }
+    }
+
+    // Function to display all comments
+    function displayComments() {
+      const commentsSection = document.getElementById("comments-section");
+      commentsSection.innerHTML = "<h2>Comments:</h2>"; // Clear the section before loading comments
+
+      const commentsRef = ref(db, 'comments'); // Reference to the comments node
+
+      // Fetch all comments from Firebase
+      get(commentsRef)
+        .then(snapshot => {
+          if (snapshot.exists()) {
+            snapshot.forEach(childSnapshot => {
+              const commentData = childSnapshot.val();
+              
+              // Create HTML elements for each comment
+              const commentElement = document.createElement("div");
+              commentElement.classList.add("comment");
+
+              const nameElement = document.createElement("p");
+              nameElement.classList.add("comment-name");
+              nameElement.innerText = commentData.name;
+
+              const commentTextElement = document.createElement("p");
+              commentTextElement.innerText = commentData.comment;
+
+              const dateElement = document.createElement("p");
+              dateElement.classList.add("comment-date");
+              dateElement.innerText = `Posted on: ${commentData.date}`;
+
+              commentElement.appendChild(nameElement);
+              commentElement.appendChild(commentTextElement);
+              commentElement.appendChild(dateElement);
+
+              commentsSection.appendChild(commentElement);
+            });
+          } else {
+            commentsSection.innerHTML += "<p>No comments yet.</p>";
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching comments:", error);
+          alert("Error fetching comments: " + error.message);
+        });
+    }
+
+    // Attach the submit function to the button click event
+    document.getElementById("submit-btn").addEventListener("click", submitComment);
+
+    // Display comments when the page loads
+    window.onload = displayComments;
+  </script>
+
+</body>
+</html>

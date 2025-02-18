@@ -573,31 +573,450 @@ function handleAdminLogin() {
     auth.signInWithEmailAndPassword(email, password)
         .then(() => {
             document.getElementById("loadingSpinner").style.display = "none"; // Hide spinner on success
-            alert("تم تسجيل الدخول بنجاح");
-            document.getElementById("adminLoginModal").style.display = "none";
-        })
-        .catch((error) => {
-            document.getElementById("loadingSpinner").style.display = "none"; // Hide spinner on error
-            alert("خطأ في تسجيل الدخول: " + error.message);
-        });
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة البيانات</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+    
+        <!-- Import Cairo Font from Google Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Global Font - Cairo for the entire website */
+        body {
+            font-family: 'Cairo', sans-serif; /* Apply Cairo font to all text */
+            direction: rtl; /* Set text direction for Arabic */
+            background-color: #f9f9f9;
+            padding: 20px;
+            position: relative;
+        }
+        
+        /* Loading Spinner */
+.loading-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    display: none; /* Hidden by default */
+    width: 80px;
+    height: 80px;
 }
 
+/* The spinner element */
+.loading-spinner::before {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 8px solid rgba(0, 119, 255, 0.2); /* Light border */
+    border-top-color: #0077ff; /* Highlight color for the moving part */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Keyframes for the spinning animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+        /* Comments Section */
+        #comments-section {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 40px;
+        }
+        
+        .comment {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .comment-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0078d4;
+            margin-bottom: 8px;
+        }
+        
+        .comment-text {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .comment-date {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 12px;
+        }
+        
+        /* Form and Text Styles */
+        h2, h3, label {
+            font-family: 'Cairo', sans-serif;
+            color: #333;
+            text-align: center;
+        }
+        
+        label {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        /* Buttons */
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4a4a4a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #333;
+        }
+        
+        /* Inputs and Selects */
+        input, select {
+            font-family: 'Cairo', sans-serif;
+            padding: 12px 15px;
+            font-size: 16px;
+            width: 97.8%;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s ease;
+        }
+        
+        /* Input Focus */
+        input:focus, select:focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+        
+        /* Result Box */
+        .result {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+            color: #333;
+            margin-top: 30px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #eef;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .admin-panel input,
+        .admin-panel select {
+            padding: 12px 15px;
+            margin: 8px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .admin-panel input:focus,
+        .admin-panel select:focus {
+            border-color: #4a90e2;
+        }
+        
+        /* Admin Login Modal */
+        #adminLoginModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+          /* X button styles */
+  .close-button {
+    position: absolute;
+    top: 110px;
+    right: 40px;
+    font-size: 60px;
+    cursor: pointer;
+  }
+        
+        #adminLoginModal form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+        }
+        
+        /* Admin Login Button */
+        #adminLoginButton {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            font-size: 12px;
+            background-color: #4a4a4a;
+            color: white;
+            border: none;
+            border-radius: 20%;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        #adminLoginButton:hover {
+            background-color: #333;
+        }
+        
+        /* Comments Button */
+        #commentsButton {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            padding: 10px;
+            font-size: 18px;
+            background-color: #4a4a4a;
+            color: white;
+            border: none;
+            border-radius: 25%;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        
+        #commentsButton:hover {
+            background-color: #333;
+        }
+        /* Footer styles */
+#footer {
+  background-color: #4a4a4a;
+  color: #fff;
+  text-align: center;
+  padding: 20px 0;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  margin-top: 40px;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+#footer a {
+  color: #ffcc00;
+  text-decoration: none;
+}
+
+#footer a:hover {
+  text-decoration: underline;
+}
+
+    </style>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCQmC0xgsYe_FSyAntl2vskuntqudsm5bw",
+        authDomain: "backend-database-deaf3.firebaseapp.com",
+        projectId: "backend-database-deaf3",
+        storageBucket: "backend-database-deaf3.firebasestorage.app",
+        messagingSenderId: "228457481653",
+        appId: "1:228457481653:web:ae034adc4d58dde85685fc",
+        measurementId: "G-MRV9B1K4J1"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // List of admin UIDs
+    const adminUIDs = [
+        'NvXoBWMruNOnhCjDBrSmgj4oMmi2',  // Replace with actual admin UID
+        'Wh1XYLnOG6dm5RvqB0sYZawkMEz2'   // Replace with another admin UID
+    ];
+
+    // Function to check admin status
+    function checkAdmin(user) {
+        if (user && adminUIDs.includes(user.uid)) {
+            document.getElementById("adminPanel").style.display = "block";
+            alert("مرحبًا، أنت مسموح لك بإدارة البيانات كأدمن");
+        } else {
+            document.getElementById("adminPanel").style.display = "none";
+        }
+    }
+
+    // Authentication listener
+    auth.onAuthStateChanged((user) => {
+        checkAdmin(user);
+    });
+
+    // Admin login function
+    function adminLogin() {
+        document.getElementById("adminLoginModal").style.display = "flex";
+    }
+
+    function handleAdminLogin() {
+        const email = document.getElementById("adminEmail").value;
+        const password = document.getElementById("adminPassword").value;
+
+        document.getElementById("loadingSpinner").style.display = "flex"; // Show spinner during login
+
+        auth.signInWithEmailAndPassword(email, password)
+            .then(() => {
+                document.getElementById("loadingSpinner").style.display = "none"; // Hide spinner on success
+                alert("تم تسجيل الدخول بنجاح");
+                document.getElementById("adminLoginModal").style.display = "none";
+            })
+            .catch((error) => {
+                document.getElementById("loadingSpinner").style.display = "none"; // Hide spinner on error
+                alert("خطأ في تسجيل الدخول: " + error.message);
+            });
+    }
+
+    // Admin logout function
+    function adminLogout() {
+        auth.signOut().then(() => alert("تم تسجيل الخروج بنجاح"));
+    }
+
+    // Fetch data for users
+    function getNameAndMaintenance(number) {
+        document.getElementById("loadingSpinner").style.display = "flex"; // Show the spinner
+
+        const docRef = db.collection("numbers").doc(String(number));
+
+        docRef.get()
+            .then((doc) => {
+                document.getElementById("loadingSpinner").style.display = "none"; // Hide spinner
+
+                if (doc.exists) {
+                    const name = doc.data().name;
+                    const maintenanceStatus = doc.data().الصيانه || "لم تحدد بعد";
+                    const unpaidMaintenance = doc.data().الصيانه_الغير_مدفوعه || "لم تحدد بعد";
+                    const total = doc.data().الاجمالي || "لم تحدد بعد";
+                    const unitType = doc.data().نوع_الوحده || "لم تحدد بعد";
+                    const unitStatus = doc.data().حالة_الوحده || "لم تحدد بعد";
+                    displayMessage(number, name, maintenanceStatus, unpaidMaintenance, total, unitType, unitStatus);
+                } else {
+                    alert("الرقم غير موجود. من الممكن انه لن يودع بعد.");
+                    document.getElementById("result").innerHTML = "الرقم غير موجود.";
+                }
+            })
+            .catch((error) => {
+                document.getElementById("loadingSpinner").style.display = "none"; // Hide spinner
+                console.error("Error fetching document: ", error);
+                alert("حدث خطأ أثناء استرجاع البيانات.");
+            });
+    }
+
+    // Display the result message including name and maintenance status
+    function displayMessage(number, name, maintenanceStatus, unpaidMaintenance, total, unitType, unitStatus) {
+        const resultElement = document.getElementById("result");
+        resultElement.innerHTML = `الرقم: ${number} <br> الاسم: ${name} <br> الصيانه: ${maintenanceStatus} <br> الصيانه الغير مدفوعه: ${unpaidMaintenance} <br> الاجمالي: ${total} <br> نوع الوحده: ${unitType} <br> حالة_الوحده: ${unitStatus}`;
+    }
+
+    // Show message when the "OK" button is clicked
+    function showMessage() {
+        const number = document.getElementById("number").value;
+
+        // Make sure the input is not empty
+        if (!number) {
+            alert("من فضلك أدخل رقم.");
+            return;
+        }
+
+        // Fetch the name and maintenance details
+        getNameAndMaintenance(String(number));
+    }
+
+    // Admin save data function
+    function saveData() {
+        const number = document.getElementById("newNumber").value;
+        const name = document.getElementById("newName").value;
+        const maintenanceStatus = parseFloat(document.getElementById("newMaintenance").value); // Paid maintenance
+        const unpaidMaintenance = parseFloat(document.getElementById("newUnpaidMaintenance").value); // Unpaid maintenance
+        const unitType = document.getElementById("newUnitType").value; // Selected unit type
+        const unitStatus = document.getElementById("newUnitStatus").value; // Selected unit status
+
+        if (isNaN(maintenanceStatus) || isNaN(unpaidMaintenance)) {
+            alert("من فضلك أدخل قيم صحيحة للصيانة.");
+            return;
+        }
+
+        const total = maintenanceStatus + unpaidMaintenance;
+
+        // Save the new data to Firestore
+        db.collection("numbers").doc(number).set({
+            name: name,
+            الصيانه: maintenanceStatus,
+            الصيانه_الغير_مدفوعه: unpaidMaintenance,
+            الاجمالي: total,
+            نوع_الوحده: unitType,
+            حالة_الوحده: unitStatus
+        }).then(() => {
+            alert("تم حفظ البيانات بنجاح");
+            // Clear the inputs after saving
+            document.getElementById("newNumber").value = '';
+            document.getElementById("newName").value = '';
+            document.getElementById("newMaintenance").value = '';
+            document.getElementById("newUnpaidMaintenance").value = '';
+        }).catch((error) => alert("خطأ أثناء حفظ البيانات: " + error.message));
+    }
+    
+</script>
 
     </script>
 </head>
 
 <body>
 
-    <!-- Admin Login Modal -->
-    <div id="adminLoginModal">
-        <form onsubmit="event.preventDefault(); handleAdminLogin();">
-            <h3>تسجيل الدخول كأدمن</h3>
-            <input type="email" id="adminEmail" placeholder="البريد الإلكتروني" required>
-            <input type="password" id="adminPassword" placeholder="كلمة المرور" required>
-            <button type="submit">دخول</button>
-        </form>
+<!-- Admin Login Modal -->
+<div id="adminLoginModal" style="display: none;">
+    <div class="modal-content">
+      <!-- X Button -->
+      <span class="close-button" onclick="closeAdminLoginModal()">×</span>
+      
+      <form onsubmit="event.preventDefault(); handleAdminLogin();">
+        <h3>تسجيل الدخول كأدمن</h3>
+        <input type="email" id="adminEmail" placeholder="البريد الإلكتروني" required>
+        <input type="password" id="adminPassword" placeholder="كلمة المرور" required>
+        <button type="submit">دخول</button>
+      </form>
     </div>
-
+  </div>
+  
     <!-- Admin Login Button -->
     <button id="adminLoginButton" onclick="adminLogin()">🔑</button>
 
@@ -648,6 +1067,25 @@ function handleAdminLogin() {
 <div id="loadingSpinner" class="loading-spinner" style="display: none;">
     <img src="IMAGES/ei_1734776271533-removebg-preview.png" alt="Loading" />
 </div>
+<!-- ... rest of your code ... -->
+
+  <!-- Comments Section -->
+  <div id="comments-section">
+    <!-- Your comments code here -->
+  </div>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <p>حقوق النشر © 2025 - جميع الحقوق محفوظة</p>
+    <p>تصميم وتطوير <a href="https://omarelsobky2.github.io/OMARf/" target="_blank">SOBKY CREATIONS</a></p>
+  </footer>
+
+  <script type="module">
+    // Your comments module code, etc.
+  </script>
+</body>
+</html>
+
 <!-- Comments Button -->
 <button id="commentsButton" onclick="window.location.href='comments.html'">💬</button>
 <div id="comments-section"> <script type="module">
@@ -718,7 +1156,16 @@ function handleAdminLogin() {
     // Display comments when the page loads
     window.onload = displayComments;
   </script>
-
+<script>
+    function openAdminLoginModal() {
+      document.getElementById('adminLoginModal').style.display = 'block';
+    }
+  
+    function closeAdminLoginModal() {
+      document.getElementById('adminLoginModal').style.display = 'none';
+    }
+  </script>
+  
 </body>
 </body>
 </html>

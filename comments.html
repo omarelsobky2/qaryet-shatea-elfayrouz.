@@ -210,87 +210,107 @@ button:hover {
 
     // Function to submit a comment to Firebase
     function submitComment() {
-      const name = document.getElementById("name").value;
-      const comment = document.getElementById("comment").value;
+  const name = document.getElementById("name").value;
+  const comment = document.getElementById("comment").value;
 
-      console.log("Name:", name);
-      console.log("Comment:", comment);
+  if (name && comment) {
+    const timestamp = new Date().toLocaleString();
+    const newComment = {
+      name: name,
+      comment: comment,
+      date: timestamp,
+      likes: 0 // التأكد من إضافة اللايكات
+    };
 
-      if (name && comment) {
-        const timestamp = new Date().toLocaleString(); // Get current date and time
-        const newComment = {
-          name: name,
-          comment: comment,
-          date: timestamp
-        };
+    // حفظ التعليق في Firebase
+    const commentsRef = ref(db, 'comments');
+    push(commentsRef, newComment)
+      .then(() => {
+        alert("Comment submitted successfully!");
+        document.getElementById("name").value = '';
+        document.getElementById("comment").value = '';
 
-        // Save the comment to Firebase
-        const commentsRef = ref(db, 'comments');  // Reference to the comments node in the DB
-        push(commentsRef, newComment)
-          .then(() => {
-            console.log("Comment submitted successfully!");
-            alert("Comment submitted successfully!");
+        displayComments(); // تحديث التعليقات مباشرةً
+      })
+      .catch(error => {
+        console.error("Error submitting comment:", error);
+        alert("Error submitting comment: " + error.message);
+      });
+  } else {
+    alert("Please fill in both your name and comment.");
+  }
+}
+import { onValue, update } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
-            // Clear the form after submission
-            document.getElementById("name").value = '';
-            document.getElementById("comment").value = '';
+function displayComments() {
+  const commentsSection = document.getElementById("comments-section");
+  commentsSection.innerHTML = "<h2>Comments:</h2>";
 
-            // Refresh the comments section
-            displayComments();
-          })
-          .catch((error) => {
-            console.error("Error submitting comment:", error);
-            alert("Error submitting comment: " + error.message);
-          });
-      } else {
-        alert("Please fill in both your name and comment.");
-      }
+  const commentsRef = ref(db, 'comments');
+
+  // بدلاً من get()، نستخدم onValue() علشان التحديث يكون تلقائي
+  onValue(commentsRef, (snapshot) => {
+    commentsSection.innerHTML = "<h2>Comments:</h2>";
+
+    if (snapshot.exists()) {
+      snapshot.forEach(childSnapshot => {
+        const commentData = childSnapshot.val();
+        const commentId = childSnapshot.key;
+
+        // إنشاء عناصر التعليق
+        const commentElement = document.createElement("div");
+        commentElement.classList.add("comment");
+
+        const nameElement = document.createElement("p");
+        nameElement.classList.add("comment-name");
+        nameElement.innerText = commentData.name;
+
+        const commentTextElement = document.createElement("p");
+        commentTextElement.innerText = commentData.comment;
+
+        const dateElement = document.createElement("p");
+        dateElement.classList.add("comment-date");
+        dateElement.innerText = `Posted on: ${commentData.date}`;
+
+        // زر اللايك
+        const likeButton = document.createElement("button");
+        likeButton.innerText = `👍 Like (${commentData.likes || 0})`;
+        likeButton.style.marginTop = "10px";
+        likeButton.addEventListener("click", () => addLike(commentId, likeButton));
+
+        // تجميع العناصر
+        commentElement.appendChild(nameElement);
+        commentElement.appendChild(commentTextElement);
+        commentElement.appendChild(dateElement);
+        commentElement.appendChild(likeButton);
+
+        commentsSection.appendChild(commentElement);
+      });
+    } else {
+      commentsSection.innerHTML += "<p>No comments yet.</p>";
     }
+  }, {
+    onlyOnce: false // علشان يفضل يتابع التحديثات تلقائيًا
+  });
+}
 
-    // Function to display all comments
-    function displayComments() {
-      const commentsSection = document.getElementById("comments-section");
-      commentsSection.innerHTML = "<h2>Comments:</h2>"; // Clear the section before loading comments
+// دالة اللايك لتحديث عدد اللايكات في Firebase
+function addLike(commentId, likeButton) {
+  const commentRef = ref(db, `comments/${commentId}`);
 
-      const commentsRef = ref(db, 'comments'); // Reference to the comments node
-
-      // Fetch all comments from Firebase
-      get(commentsRef)
-        .then(snapshot => {
-          if (snapshot.exists()) {
-            snapshot.forEach(childSnapshot => {
-              const commentData = childSnapshot.val();
-              
-              // Create HTML elements for each comment
-              const commentElement = document.createElement("div");
-              commentElement.classList.add("comment");
-
-              const nameElement = document.createElement("p");
-              nameElement.classList.add("comment-name");
-              nameElement.innerText = commentData.name;
-
-              const commentTextElement = document.createElement("p");
-              commentTextElement.innerText = commentData.comment;
-
-              const dateElement = document.createElement("p");
-              dateElement.classList.add("comment-date");
-              dateElement.innerText = `Posted on: ${commentData.date}`;
-
-              commentElement.appendChild(nameElement);
-              commentElement.appendChild(commentTextElement);
-              commentElement.appendChild(dateElement);
-
-              commentsSection.appendChild(commentElement);
-            });
-          } else {
-            commentsSection.innerHTML += "<p>No comments yet.</p>";
-          }
-        })
-        .catch(error => {
-          console.error("Error fetching comments:", error);
-          alert("Error fetching comments: " + error.message);
-        });
+  get(commentRef).then(snapshot => {
+    if (snapshot.exists()) {
+      let currentLikes = snapshot.val().likes || 0;
+      update(commentRef, { likes: currentLikes + 1 }).then(() => {
+        likeButton.innerText = `👍 Like (${currentLikes + 1})`;
+      });
     }
+  }).catch(error => {
+    console.error("Error updating likes:", error);
+  });
+}
+
+
 
     // Attach the submit function to the button click event
     document.getElementById("submit-btn").addEventListener("click", submitComment);
